@@ -13,10 +13,18 @@ const server = http.createServer((req, res) => {
     return res.end();
     req.p;
   } else if (url === "/message" && req.method === "POST") {
-    return fs.writeFile("Message.txt", "Hi message", () => {
-      res.statusCode = 301;
-      res.setHeader("Location", "/");
-      return res.end();
+    const body = [];
+    req.on("data", (chunk) => {
+      body.push(chunk);
+    });
+    req.on("end", () => {
+      const parsedBody = Buffer.concat(body).toString();
+      const message = parsedBody.split("=")[1];
+      fs.writeFile("Message.txt", message, () => {
+        res.statusCode = 301;
+        res.setHeader("Location", "/");
+        return res.end();
+      });
     });
   }
 });
