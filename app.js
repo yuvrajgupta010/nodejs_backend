@@ -11,7 +11,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", "views");
-S;
+
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
