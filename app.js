@@ -1,3 +1,4 @@
+require("dotenv").config();
 const path = require("path");
 
 const express = require("express");
@@ -12,9 +13,8 @@ const multer = require("multer");
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
-const MONGODB_URI =
-  "mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/shop";
-
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@nodecomplete.lbm2jtt.mongodb.net/shop`;
+// console.log(MONGODB_URI);
 const app = express();
 const store = new MongoDBStore({
   uri: MONGODB_URI,
@@ -102,6 +102,7 @@ app.use(errorController.get404);
 app.use((error, req, res, next) => {
   // res.status(error.httpStatusCode).render(...);
   // res.redirect('/500');
+  console.log(error, "error middleware");
   res.status(500).render("500", {
     pageTitle: "Error!",
     path: "/500",

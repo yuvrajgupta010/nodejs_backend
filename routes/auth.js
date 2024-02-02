@@ -1,5 +1,5 @@
 const express = require("express");
-const { check, body } = require("express-validator/check");
+const { check, body } = require("express-validator");
 
 const authController = require("../controllers/auth");
 const User = require("../models/user");
@@ -16,6 +16,7 @@ router.post(
     body("email")
       .isEmail()
       .withMessage("Please enter a valid email address.")
+      .toLowerCase()
       .normalizeEmail(),
     body("password", "Password has to be valid.")
       .isLength({ min: 5 })
@@ -31,6 +32,7 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("Please enter a valid email.")
+      .toLowerCase()
       .custom((value, { req }) => {
         // if (value === 'test@test.com') {
         //   throw new Error('This email address if forbidden.');

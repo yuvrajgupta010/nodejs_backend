@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const stripe = require("stripe")("sk_test_Flc1Upp19T0q8ZgmKGDVJUI400j9emUSTr");
+const stripe = require("stripe")(process.env.STRIPE_SECERT_API_KEY);
 
 const PDFDocument = require("pdfkit");
 
@@ -93,7 +93,7 @@ exports.getIndex = (req, res, next) => {
 exports.getCart = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
-    .execPopulate()
+    // .execPopulate()
     .then((user) => {
       const products = user.cart.items;
       res.render("shop/cart", {
@@ -145,7 +145,7 @@ exports.getCheckout = (req, res, next) => {
   let total = 0;
   req.user
     .populate("cart.items.productId")
-    .execPopulate()
+    // .execPopulate()
     .then((user) => {
       products = user.cart.items;
       total = 0;
@@ -157,13 +157,18 @@ exports.getCheckout = (req, res, next) => {
         payment_method_types: ["card"],
         line_items: products.map((p) => {
           return {
-            name: p.productId.title,
-            description: p.productId.description,
-            amount: p.productId.price * 100,
-            currency: "usd",
+            price_data: {
+              product_data: {
+                name: p.productId.title,
+                description: p.productId.description,
+              },
+              unit_amount: p.productId.price * 100,
+              currency: "inr",
+            },
             quantity: p.quantity,
           };
         }),
+        mode: "payment",
         success_url:
           req.protocol + "://" + req.get("host") + "/checkout/success", // => http://localhost:3000
         cancel_url: req.protocol + "://" + req.get("host") + "/checkout/cancel",
@@ -188,7 +193,7 @@ exports.getCheckout = (req, res, next) => {
 exports.getCheckoutSuccess = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
-    .execPopulate()
+    // .execPopulate()
     .then((user) => {
       const products = user.cart.items.map((i) => {
         return { quantity: i.quantity, product: { ...i.productId._doc } };
@@ -218,7 +223,7 @@ exports.getCheckoutSuccess = (req, res, next) => {
 exports.postOrder = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
-    .execPopulate()
+    // .execPopulate()
     .then((user) => {
       const products = user.cart.items.map((i) => {
         return { quantity: i.quantity, product: { ...i.productId._doc } };
