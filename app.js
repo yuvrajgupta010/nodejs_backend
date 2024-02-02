@@ -9,9 +9,12 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
+
+const PORT = process.env.PORT || 8080;
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@nodecomplete.lbm2jtt.mongodb.net/shop`;
 // console.log(MONGODB_URI);
@@ -50,6 +53,7 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
@@ -113,7 +117,8 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URI)
   .then((result) => {
-    app.listen(3000);
+    app.listen(PORT);
+    console.log("I am ready!");
   })
   .catch((err) => {
     console.log(err);
