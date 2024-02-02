@@ -1,5 +1,7 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
+
 const stripe = require("stripe")(process.env.STRIPE_SECERT_API_KEY);
 
 const PDFDocument = require("pdfkit");
@@ -143,6 +145,17 @@ exports.postCartDeleteProduct = (req, res, next) => {
 exports.getCheckout = (req, res, next) => {
   let products;
   let total = 0;
+  // Generate a random value for the nonce
+  const nonce = crypto.randomBytes(16).toString("base64");
+
+  // Set the nonce in the response header
+  res.setHeader(
+    "Content-Security-Policy",
+    `script-src 'self' https://js.stripe.com/v3/ 'nonce-${nonce}'; object-src 'self';`
+  );
+
+  res.locals.nonce = nonce;
+
   req.user
     .populate("cart.items.productId")
     // .execPopulate()

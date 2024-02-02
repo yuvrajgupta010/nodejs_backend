@@ -19,8 +19,8 @@
             </div>
             <div class="centered">
                 <button id="order-btn" class="btn">ORDER</button>
-                <script src="https://js.stripe.com/v3/"></script>
-                <script>
+                <script nonce='<%= nonce %>' src="https://js.stripe.com/v3/"></script>
+                <script nonce='<%= nonce %>'>
                     var stripe = Stripe('pk_test_51MZBZySH9dh5enGRX9r1DVqJliARsI1NXX6aQ2JvR9CHfkW2MJGgGJtiRpss9BbykJsiGmMxenP9z6uH4rmWmEGX00oypemccC');
                     var orderBtn = document.getElementById('order-btn');
                     orderBtn.addEventListener('click', function() {

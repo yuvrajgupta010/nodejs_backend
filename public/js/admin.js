@@ -21,3 +21,7 @@ const deleteProduct = (btn) => {
       console.log(err);
     });
 };
+
+document.getElementById("deleteButton").addEventListener("click", function () {
+  deleteProduct(this);
+});
