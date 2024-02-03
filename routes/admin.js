@@ -18,9 +18,15 @@ router.get("/products", isAuth, adminController.getProducts);
 router.post(
   "/add-product",
   [
-    body("title").isString().isLength({ min: 3 }).trim(),
-    body("price").isFloat(),
-    body("description").isLength({ min: 5, max: 400 }).trim(),
+    body("title", "Title have to be string with minimum length of 3")
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body("price").isFloat().withMessage("Please enter valid price"),
+    body("description")
+      .isLength({ min: 5, max: 400 })
+      .withMessage("Description have to be between 5-400 character")
+      .trim(),
   ],
   isAuth,
   adminController.postAddProduct
@@ -31,9 +37,14 @@ router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 router.post(
   "/edit-product",
   [
-    body("title").isString().isLength({ min: 3 }).trim(),
-    body("price").isFloat(),
-    body("description").isLength({ min: 5, max: 400 }).trim(),
+    body("title", "Title have to be string with minimum length of 3")
+      .isString()
+      .isLength({ min: 3 })
+      .trim(),
+    body("price", "Please enter valid price").isFloat(),
+    body("description", "Description have to be between 5-400 character")
+      .isLength({ min: 5, max: 400 })
+      .trim(),
   ],
   isAuth,
   adminController.postEditProduct

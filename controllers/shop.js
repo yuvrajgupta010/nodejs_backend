@@ -98,6 +98,8 @@ exports.getCart = (req, res, next) => {
     // .execPopulate()
     .then((user) => {
       const products = user.cart.items;
+
+      // console.log(products, "items");
       res.render("shop/cart", {
         path: "/cart",
         pageTitle: "Your Cart",
@@ -118,7 +120,7 @@ exports.postCart = (req, res, next) => {
       return req.user.addToCart(product);
     })
     .then((result) => {
-      console.log(result);
+      // console.log(result);
       res.redirect("/cart");
     })
     .catch((err) => {
@@ -161,6 +163,8 @@ exports.getCheckout = (req, res, next) => {
     // .execPopulate()
     .then((user) => {
       products = user.cart.items;
+
+      // console.log(products, "products gtcheckout");
       total = 0;
       products.forEach((p) => {
         total += p.quantity * p.productId.price;

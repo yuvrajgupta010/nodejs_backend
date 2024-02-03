@@ -5,6 +5,9 @@ const fileHelper = require("../util/file");
 const { validationResult } = require("express-validator");
 
 const Product = require("../models/product");
+const User = require("../models/user");
+
+const { deleteFileFromS3 } = require("../utils/multer-s3");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -20,6 +23,7 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
   const image = req.file;
+  // console.log(image, "req.file");
   const price = req.body.price;
   const description = req.body.description;
   if (!image) {
@@ -56,7 +60,7 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
 
-  const imageUrl = image.path;
+  const imageUrl = image.key;
 
   const product = new Product({
     // _id: new mongoose.Types.ObjectId('5badf72403fd8b5be0366e81'),
@@ -158,8 +162,8 @@ exports.postEditProduct = (req, res, next) => {
       product.price = updatedPrice;
       product.description = updatedDesc;
       if (image) {
-        fileHelper.deleteFile(product.imageUrl);
-        product.imageUrl = image.path;
+        deleteFileFromS3(product.imageUrl);
+        product.imageUrl = image.key;
       }
       return product.save().then((result) => {
         console.log("UPDATED PRODUCT!");
@@ -178,7 +182,7 @@ exports.getProducts = (req, res, next) => {
     // .select('title price -_id')
     // .populate('userId', 'name')
     .then((products) => {
-      console.log(products);
+      // console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
@@ -194,19 +198,32 @@ exports.getProducts = (req, res, next) => {
 
 exports.deleteProduct = (req, res, next) => {
   const prodId = req.params.productId;
+  const userId = req.user._id; // Assuming you have access to the user ID
+
   Product.findById(prodId)
     .then((product) => {
       if (!product) {
         return next(new Error("Product not found."));
       }
-      fileHelper.deleteFile(product.imageUrl);
-      return Product.deleteOne({ _id: prodId, userId: req.user._id });
+      // Delete product from S3
+      deleteFileFromS3(product.imageUrl);
+
+      // Delete the product from all users' carts
+      return User.updateMany(
+        { "cart.items.productId": prodId },
+        { $pull: { "cart.items": { productId: prodId } } }
+      );
+    })
+    .then(() => {
+      // Now, delete the product itself
+      return Product.deleteOne({ _id: prodId, userId: userId });
     })
     .then(() => {
       console.log("DESTROYED PRODUCT");
       res.status(200).json({ message: "Success!" });
     })
     .catch((err) => {
+      console.error(err);
       res.status(500).json({ message: "Deleting product failed." });
     });
 };
