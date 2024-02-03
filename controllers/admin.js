@@ -40,7 +40,7 @@ exports.postAddProduct = (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log(errors.array());
+    // console.log(errors.array());
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Add Product",
       path: "/admin/add-product",
@@ -70,7 +70,7 @@ exports.postAddProduct = (req, res, next) => {
     .save()
     .then((result) => {
       // console.log(result);
-      console.log("Created Product");
+      // console.log("Created Product");
       res.redirect("/admin/products");
     })
     .catch((err) => {
