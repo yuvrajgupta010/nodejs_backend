@@ -60,6 +60,15 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get("/health-check", (req, res) => {
+  const healthCheck = {
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: START_TIME,
+  };
+  res.json(healthCheck);
+});
+
 app.use((req, res, next) => {
   // throw new Error('Sync Dummy');
   if (!req.session.user) {
