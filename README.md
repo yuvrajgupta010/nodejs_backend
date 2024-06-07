@@ -36,6 +36,7 @@ To get started, clone the repository and install the dependencies:
 git clone https://github.com/yuvrajgupta010/nodejs_backend.git
 cd nodejs_backend
 yarn install
+```
 
 ## Setup
 Add .env file with own keys:
