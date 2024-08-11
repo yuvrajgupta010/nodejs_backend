@@ -14,7 +14,7 @@ const { uploadFileOnS3 } = require("./utils/multer-s3");
 const errorController = require("./controllers/error");
 const User = require("./models/user");
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 7070;
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@nodecomplete.lbm2jtt.mongodb.net/shop`;
 // console.log(MONGODB_URI);
