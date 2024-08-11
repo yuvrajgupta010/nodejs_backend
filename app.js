@@ -111,7 +111,7 @@ mongoose
   .connect(MONGODB_URI)
   .then((result) => {
     app.listen(PORT);
-    console.log("I am ready!");
+    console.log("I am ready!", PORT);
   })
   .catch((err) => {
     console.log(err);
