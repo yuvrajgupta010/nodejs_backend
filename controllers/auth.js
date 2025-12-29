@@ -6,6 +6,9 @@ const { validationResult } = require("express-validator");
 
 const User = require("../models/user");
 
+const ZOHO_EMAIL = process.env.ZOHO_EMAIL;
+const ZOHO_EMAIL_APP_PASSWORD = process.env.ZOHO_EMAIL_APP_PASSWORD;
+
 // const transporter = nodemailer.createTransport(
 //   sendgridTransport({
 //     auth: {
@@ -222,7 +225,7 @@ exports.postReset = (req, res, next) => {
             subject: "Password reset",
             html: `
               <p>You requested a password reset</p>
-              <p>Click this <a href="http://static-shop.personal.yuvrajgupta.in/reset/${token}">link</a> to set a new password.</p>
+              <p>Click this <a href="http://static-shop.yuvrajgupta.in/reset/${token}">link</a> to set a new password.</p>
             `,
           });
         });
