@@ -1,15 +1,20 @@
-const aws = require("aws-sdk");
+const {
+  S3Client,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} = require("@aws-sdk/client-s3");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
 
-aws.config.update({
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  accessKeyId: process.env.AWS_ACCESS_KEY,
+const s3 = new S3Client({
   region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
 });
 
 const BUCKET = process.env.AWS_BUCKET_NAME;
-const s3 = new aws.S3();
 
 const fileFilter = (req, file, cb) => {
   if (
@@ -45,14 +50,13 @@ const deleteFileFromS3 = async (key) => {
   };
 
   try {
-    return await s3.deleteObject(params).promise();
-    console.log("File deleted successfully from S3");
+    return await s3.send(new DeleteObjectCommand(params));
   } catch (err) {
     console.error("Error deleting file from S3:", err);
   }
 };
 
-// Get file from S3
+// Get file from S3 (note: in SDK v3, data.Body is a stream, not a Buffer)
 const getFileFromS3 = async (key) => {
   const params = {
     Bucket: BUCKET,
@@ -60,7 +64,7 @@ const getFileFromS3 = async (key) => {
   };
 
   try {
-    const data = await s3.getObject(params).promise();
+    const data = await s3.send(new GetObjectCommand(params));
     return data;
   } catch (err) {
     console.error("Error getting file from S3:", err);
